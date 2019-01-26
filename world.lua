@@ -5,7 +5,7 @@ worldImg["Grass"] = love.graphics.newImage("assets/Grass.png")
 worldImg["Forest"] = love.graphics.newImage("assets/Forest.png")
 worldImg["Mine"] = love.graphics.newImage("assets/Mine.png")
 
-cID = 0 -- the ID of the tile that the cursor is currently over
+cID = 1 -- the ID of the tile that the cursor is currently over
 
 cam = {x = 0, y = 0}
 
@@ -18,9 +18,30 @@ function updateWorld()
     for i, v in pairs(world_decoded) do
         world[i] = v
     end
+
+    love.graphics.setCanvas(worldCanvas)
+        love.graphics.clear()
+        love.graphics.setBlendMode("alpha")
+        local x = 0
+        local y = 0
+        for i = 1, 100*100 do
+            if worldImg[world[i].buildingType] then
+                love.graphics.draw(worldImg[world[i].buildingType], x-cam.x, y-cam.y)
+            else
+                love.graphics.rectangle("fill",x-cam.x,y-cam.y,32,32)
+            end
+    
+            x = x + 32
+            if x >= 100*32 then
+                x = 0
+                y = y + 32
+            end
+        end
+    love.graphics.setCanvas()
 end
 
 function world.load()
+    worldCanvas = love.graphics.newCanvas(100*32, 100*32)
     updateWorld()
 end
 
@@ -28,12 +49,6 @@ function world.draw()
     local x = 0
     local y = 0
     for i = 1, 100*100 do
-        if worldImg[world[i].buildingType] then
-            love.graphics.draw(worldImg[world[i].buildingType], x-cam.x, y-cam.y)
-        else
-            love.graphics.rectangle("fill",x-cam.x,y-cam.y,32,32)
-        end
-
         if isMouseOver(x-cam.x, y-cam.y, 32, 32) then
             cID = i -- set tile that mouse is over
         end
@@ -45,7 +60,9 @@ function world.draw()
         end
     end
 
-    love.graphics.print("ID : "..tostring(cID).."\nTYPE : "..tostring(world[cid].buildingType))
+    love.graphics.draw(worldCanvas,-cam.x,-cam.y)
+
+    love.graphics.print("ID : "..tostring(cID).."\nTYPE : "..tostring(world[cID].buildingType))
 end
 
 function world.update(dt)

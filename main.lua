@@ -1,14 +1,13 @@
-
+http = require("socket.http")
 local myGame = require("game")
 
 
 function love.load()
-    love.window.setMode(1280, 720)
+
     -- in the main chunk somewhere:
-    scale = {}
+
 -- every time after resolution changes, and also at initialization: 
-    scale.x = love.graphics.getWidth()/1280
-    scale.y = love.graphics.getHeight()/720
+
 
     myGame.load()
 end
@@ -25,7 +24,7 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.scale(scale.x,scale.y)
+
     myGame.draw()
 end
 

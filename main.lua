@@ -1,6 +1,9 @@
 http = require("socket.http")
-json = require("json")
+json = require("libraries.json")
 local world = require("world")
+
+require "libraries.tools"
+require "settings"
 
 phase = "world"
 
@@ -10,6 +13,9 @@ function love.load()
 end
 
 function love.update(dt)
+    if phase == "world" then
+        world.update(dt)
+    end
 end
 
 function love.draw()

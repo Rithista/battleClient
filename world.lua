@@ -6,6 +6,7 @@ worldImg["Forest"] = love.graphics.newImage("assets/Forest.png")
 worldImg["Mine"] = love.graphics.newImage("assets/Mine.png")
 
 cID = 1 -- the ID of the tile that the cursor is currently over
+selectedTile = 1 -- the ID of the tile that is currently selected
 
 cam = {x = 0, y = 0}
 
@@ -26,9 +27,9 @@ function updateWorld()
         local y = 0
         for i = 1, 100*100 do
             if worldImg[world[i].buildingType] then
-                love.graphics.draw(worldImg[world[i].buildingType], x-cam.x, y-cam.y)
+                love.graphics.draw(worldImg[world[i].buildingType], x, y)
             else
-                love.graphics.rectangle("fill",x-cam.x,y-cam.y,32,32)
+                love.graphics.rectangle("fill",x,y,32,32)
             end
     
             x = x + 32
@@ -46,12 +47,23 @@ function world.load()
 end
 
 function world.draw()
+    love.graphics.draw(worldCanvas,-cam.x,-cam.y)
+
     local x = 0
     local y = 0
     for i = 1, 100*100 do
         if isMouseOver(x-cam.x, y-cam.y, 32, 32) then
             cID = i -- set tile that mouse is over
+            love.graphics.setColor(0,0,0,0.8)
+            love.graphics.rectangle("line", x-cam.x, y-cam.y, 32, 32)
         end
+
+        if i == selectedTile then
+            love.graphics.setColor(0,0,0,0.5)
+            love.graphics.rectangle("fill", x-cam.x, y-cam.y, 32, 32)
+        end
+
+        love.graphics.setColor(1,1,1,1)
 
         x = x + 32
         if x >= 100*32 then
@@ -60,7 +72,7 @@ function world.draw()
         end
     end
 
-    love.graphics.draw(worldCanvas,-cam.x,-cam.y)
+   
 
     love.graphics.print("ID : "..tostring(cID).."\nTYPE : "..tostring(world[cID].buildingType))
 end
@@ -82,6 +94,12 @@ function world.update(dt)
     elseif love.keyboard.isDown(KEY_CAM_DOWN) then
         cam.y = cam.y + camSpeed
     end
+end
+
+function world.press(x, y, button) -- handles mouse presses when in world phase
+   -- updateWorld()
+    setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
+    selectedTile = cID
 end
 
 return world

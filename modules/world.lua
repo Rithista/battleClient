@@ -78,7 +78,7 @@ function world.draw()
         end
 
         if i == selectedTile then
-            love.graphics.setColor(0,0,0,0.5)
+            love.graphics.setColor(0,0,0,0.2)
             love.graphics.rectangle("fill", x-cam.x, y-cam.y, 32, 32)
         end
 
@@ -141,7 +141,7 @@ function world.update(dt)
 
         if time.updateWorld < 0 then
             updateWorld()
-            time.updateWorld = 200
+            time.updateWorld = 60
         end
     end
 end
@@ -154,11 +154,14 @@ function world.press(x, y, button) -- handles mouse presses when in world phase
         updateWorld()
     elseif player.authcode and (cID + 100 == selectedTile or cID - 100 == selectedTile or cID + 1 == selectedTile or cID - 1 == selectedTile) and world[selectedTile].username == player.username then
         http.request("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&number=1000&authcode="..player.authcode)
-        print("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&authcode="..player.authcode)
+       -- print("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&authcode="..player.authcode)
         updateWorld()
+        selectedTile = cID
     end
 
-    selectedTile = cID
+    if button == 2 then
+        selectedTile = cID
+    end
 end
 
 return world

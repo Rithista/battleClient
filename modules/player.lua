@@ -87,8 +87,12 @@ function drawBuildingBox(x, y)
             love.graphics.setColor(1,1,1)
 
             if love.mouse.isDown(1) then
+                --print("submitted build request")
                 world[selectedTile].buildingType = "Building"
                 http.request("http://freshplay.co.uk/b/api.php?a=build&position="..selectedTile.."&type="..v.buildingType.."&authcode="..player.authcode)
+                selectedTile = 1
+                updateWorld()
+                
             end
         else
             love.graphics.setColor(0.4,0.4,0.4)

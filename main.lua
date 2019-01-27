@@ -1,6 +1,6 @@
 http = require("socket.http")
 json = require("libraries.json")
-local world = require("world")
+local world = require("modules.world")
 
 require "libraries.tools"
 require "settings"
@@ -33,14 +33,10 @@ function love.update(dt)
     updateUIElements(dt)
 end
 
-function love.keypressed(key)
-end
-
 function love.mousepressed(x, y, button, istouch)
     if phase == "world" then
         world.press(x, y, button)
     end
+
+    uiPress(x,y)
 end
-
-
-

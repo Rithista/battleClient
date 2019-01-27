@@ -68,3 +68,30 @@ function drawPlayerStats()
         love.graphics.draw(statImg["pop"],bFont:getWidth("King "..player.username.."    "..player.gold.."    "..player.wood.."    "..player.stone.."    "..player.food.."    "..player.pop))
     end
 end
+
+function drawBuildingBox(x, y)
+    love.graphics.setColor(0,0,0,1)
+    love.graphics.rectangle("fill",x,y,320,320)
+    love.graphics.setColor(1,1,1)
+    love.graphics.setFont(bFont)
+    love.graphics.printf("Building Box",x,y,320,"center")
+    local cx = x
+    local cy = y+bFont:getHeight()
+    for i, v in pairs(buildable) do
+
+        if worldImg[v.buildingType] then
+            love.graphics.draw(worldImg[v.buildingType], cx, cy)
+        end
+            if isMouseOver(cx,cy,32,32) then
+                setTT(v.buildingType,"Costs "..v.goldCost.."g, "..v.woodCost.."w, "..v.stoneCost.."s. Built in "..v.timeToBuild.."m. Generates "..v.depositValue.." "..v.attribute.." every minute.")
+            end
+
+            cx = cx + 32
+            if cx > x+320 then
+                cx = x
+                cy = cy + 32
+            end
+        
+
+    end
+end

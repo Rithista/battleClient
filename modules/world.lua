@@ -91,6 +91,11 @@ function world.draw()
         end
     end
 
+    if player.authcode and buildable then
+        love.graphics.setColor(1,1,1,1)
+        drawBuildingBox(400,600)
+    end
+
     love.graphics.print("ID : "..tostring(cID).."\nTYPE : "..tostring(world[cID].buildingType))
 end
 
@@ -121,6 +126,9 @@ function world.update(dt)
             b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
             player = json:decode(b)
             time.updateUser = 30
+
+            b = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildable&authcode="..player.authcode)
+            buildable = json:decode(b)
         end
 
         if time.updateWorld < 0 then

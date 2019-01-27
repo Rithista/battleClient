@@ -12,8 +12,8 @@ require "modules.player"
 phase = "world"
 
 time = {
-    updateUser = 30,
-    updateWorld = 200
+    updateUser = 5,
+    updateWorld = 10
 }
 
 function love.load()

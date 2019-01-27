@@ -1,45 +1,52 @@
 http = require("socket.http")
-local myGame = require("game")
+json = require("libraries.json")
+utf8 = require("utf8")
+local world = require("modules.world")
+require "modules.assets"
 
+require "libraries.tools"
+require "settings"
+require "libraries.ui"
+require "modules.player"
+require "modules.fight"
+
+phase = "world"
+
+time = {
+    updateUser = 5,
+    updateWorld = 10
+}
 
 function love.load()
-
-    -- in the main chunk somewhere:
-
--- every time after resolution changes, and also at initialization: 
-
-
-    myGame.load()
-end
-
-function findTile(x)
-    return x * myGame.findTileSize()
-end
-
-function love.update(dt)
-    -- To move the cursor/current unit
-    -- with a smooth L33T transition
-	--player.act_y = player.act_y - ((player.act_y - player.grid_y) * player.speed * dt)
-	--player.act_x = player.act_x - ((player.act_x - player.grid_x) * player.speed * dt)
+    world.load()
 end
 
 function love.draw()
+    if phase == "world" then
+        world.draw()
 
-    myGame.draw()
+        if player.authcode then -- player is logged in
+            drawPlayerStats()
+        end
+    end
+
+    drawLoginBox()
+    drawUIElements()
 end
 
-function love.keypressed(key)
-    
+
+function love.update(dt)
+    if phase == "world" then
+        world.update(dt)
+    end
+
+    updateUIElements(dt)
 end
 
 function love.mousepressed(x, y, button, istouch)
-    mouseX = x
-    mouseY = y
-    -- mouseX = math.floor(mouseX/myGame.findTileSize()) * findTileSize()
-    -- mouseY = math.floor(mouseY/myGamer.findTileSize()) * findTileSize() 
+    if phase == "world" then
+        world.press(x, y, button)
+    end
+
+    uiPress(x,y)
 end
-
--- Make HTTP request to http://freshplay.co.uk/b/api.php?a=get&scope=world&type=buildings
-
-
-

@@ -21,8 +21,10 @@ function updateWorld()
         world[i] = v
     end
 
-    buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
-    buildingCount = tonumber(buildingCount)
+    if player.authcode then
+        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
+        buildingCount = tonumber(buildingCount)
+    end
 
     love.graphics.setCanvas(worldCanvas)
         love.graphics.clear()

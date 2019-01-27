@@ -58,6 +58,13 @@ function drawPlayerStats()
     love.graphics.print("King "..player.username)
 
     if buildingCount == 0 then
-        love.graphics.print("Choose a tile to place your castle.", 0+bFont:getWidth("King "..player.username.."  "), 0)
+        love.graphics.print("Choose a tile to place your castle.", bFont:getWidth("King "..player.username.."  "), 0)
+    else
+        love.graphics.print(player.gold.."    "..player.wood.."    "..player.stone.."    "..player.food.."    "..player.pop, bFont:getWidth("King "..player.username.."    "))
+        love.graphics.draw(statImg["gold"],bFont:getWidth("King "..player.username.."    "..player.gold))
+        love.graphics.draw(statImg["wood"],bFont:getWidth("King "..player.username.."    "..player.gold.."    "..player.wood))
+       -- love.graphics.draw(statImg["stone"],0,bFont:getWidth("King "..player.username.."    "..player.gold.."    "..player.wood.."    "..player.stone))
+        love.graphics.draw(statImg["food"],bFont:getWidth("King "..player.username.."    "..player.gold.."    "..player.wood.."    "..player.stone.."    "..player.food))
+        love.graphics.draw(statImg["pop"],bFont:getWidth("King "..player.username.."    "..player.gold.."    "..player.wood.."    "..player.stone.."    "..player.food.."    "..player.pop))
     end
 end

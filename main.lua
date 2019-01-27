@@ -2,9 +2,7 @@ http = require("socket.http")
 json = require("libraries.json")
 utf8 = require("utf8")
 local world = require("modules.world")
-
-bFont = love.graphics.newFont(16)
-tFont = love.graphics.newFont(11)
+require "modules.assets"
 
 require "libraries.tools"
 require "settings"
@@ -13,6 +11,10 @@ require "modules.player"
 
 phase = "world"
 
+time = {
+    updateUser = 30,
+    updateWorld = 200
+}
 
 function love.load()
     world.load()

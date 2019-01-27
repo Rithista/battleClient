@@ -1,11 +1,5 @@
 world = {}
 
-worldImg = {}
-worldImg["Grass"] = love.graphics.newImage("assets/Grass.png")
-worldImg["Forest"] = love.graphics.newImage("assets/Forest.png")
-worldImg["Mine"] = love.graphics.newImage("assets/Mine.png")
-worldImg["Castle"] = love.graphics.newImage("assets/Castle.png")
-
 cID = 1 -- the ID of the tile that the cursor is currently over
 selectedTile = 1 -- the ID of the tile that is currently selected
 
@@ -39,8 +33,15 @@ function updateWorld()
             end
 
             if tonumber(world[i].units) and tonumber(world[i].units) > 0 then
+                if player.username == world[i].username then
+                    love.graphics.setColor(1,0.84,0.26)
+                else
+                    love.graphics.setColor(1,0,0)
+                end
 
+                love.graphics.print(world[i].units, x, y)
             end
+            love.graphics.setColor(1,1,1)
     
             x = x + 32
             if x >= 100*32 then
@@ -110,11 +111,28 @@ function world.update(dt)
     elseif love.keyboard.isDown(KEY_CAM_DOWN) and cam.y+love.graphics.getHeight() < 100*32 then
         cam.y = cam.y + camSpeed
     end
+
+    if player.authcode then
+        for i, v in pairs(time) do
+            time[i] = time[i] - 1*dt
+        end
+
+        if time.updateUser < 0 then
+            b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
+            player = json:decode(b)
+            time.updateUser = 30
+        end
+
+        if time.updateWorld < 0 then
+            updateWorld()
+            time.updateWorld = 200
+        end
+    end
 end
 
 function world.press(x, y, button) -- handles mouse presses when in world phase
    -- updateWorld()
-   -- setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
+        setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
     selectedTile = cID
 
     if buildingCount == 0 and player.authcode then

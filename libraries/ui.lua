@@ -21,10 +21,10 @@ function drawTT()
     love.graphics.setColor(0,0,0,tooltip.alpha)
     love.graphics.rectangle("fill",tooltip.x,tooltip.y,tFont:getWidth(tooltip.desc),64)
     love.graphics.setColor(1,1,1,tooltip.alpha)
-    love.graphics.setFont(font)
+    love.graphics.setFont(bFont)
     love.graphics.print(tooltip.title,tooltip.x,tooltip.y)
     love.graphics.setFont(tFont)
-    love.graphics.print(tooltip.desc,tooltip.x,tooltip.y+font:getHeight())
+    love.graphics.print(tooltip.desc,tooltip.x,tooltip.y+bFont:getHeight())
     love.graphics.setColor(1,1,1,1)
 end
 
@@ -38,27 +38,53 @@ function addTextBox(x,y,width,font,default)
         font = font,
         default = default,
         text = "",
-        active = false
+        active = false,
+        hidden = false
     }
+
+
+    return #textbox
 end
 
-function drawTextBox()
-    for i, v in pairs(textbox) do
-        if isMouseOver(v.x,v.y,v.width,v.font:getHeight()) then
-            love.graphics.setColor(0.8,0.8,0.8,1)
-        else
-            love.graphics.setColor(1,1,1,1)
-        end
-        love.graphics.rectangle("fill",v.x,v.y,v.width,v.font:getHeight())
+function drawTextBox(i)
+   v = textbox[i]
+        if not v.hidden then
+            if isMouseOver(v.x,v.y,v.width,v.font:getHeight()) then
+                love.graphics.setColor(0.8,0.8,0.8,1)
+            else
+                love.graphics.setColor(1,1,1,1)
+            end
+            love.graphics.rectangle("fill",v.x,v.y,v.width,v.font:getHeight())
 
-        love.graphics.setFont(v.font)
-        if v.text == "" then
-            love.graphics.setColor(0,0,0,0.5)
-            love.graphics.print(v.default)
-        else
-            love.graphics.setColor(0,0,0,1)
-            love.graphics.print(v.text)
+            love.graphics.setFont(v.font)
+            if v.text == "" and not v.active then
+                love.graphics.setColor(0,0,0,0.5)
+                love.graphics.print(v.default,v.x,v.y)
+            else
+                love.graphics.setColor(0,0,0,1)
+                love.graphics.print(v.text,v.x,v.y)
+            end
+
+            if v.active then love.graphics.print("|",v.x+v.font:getWidth(v.text),v.y) end
         end
+
+    love.graphics.setColor(1,1,1,1)
+end
+
+function drawButton(text,x,y,width,font)
+    if isMouseOver(x,y,width,font:getHeight()) then
+        love.graphics.setColor(0.7,0.7,0.7,1)
+    else
+        love.graphics.setColor(1,1,1,1)
+    end
+
+    love.graphics.setFont(font)
+    love.graphics.rectangle("line",x,y,width,font:getHeight())
+    love.graphics.setColor(1,1,1,1)
+    love.graphics.printf(text,x,y,width,"center")
+
+    if isMouseOver(x,y,width,font:getHeight()) and love.mouse.isDown(1) then
+        return true
     end
 end
 
@@ -71,7 +97,7 @@ function drawUIElements()
 end
 
 function uiPress(x,y)
-    for i = 1, #textbox do
+    for i, v in pairs(textbox) do
         if isMouseOver(v.x,v.y,v.width,v.font:getHeight()) then
             textbox[i].active = true
             activeTextBox = i
@@ -82,9 +108,9 @@ function uiPress(x,y)
 end
 
 function love.keypressed(key)
-    if key == "backspace" then
+    if key == "backspace" and textbox[activeTextBox] then
         -- get the byte offset to the last UTF-8 character in the string.
-        local byteoffset = utf8.offset(text, -1)
+        local byteoffset = utf8.offset(textbox[activeTextBox].text, -1)
  
         if byteoffset and textbox[activeTextBox].active == true then -- the activetextbox only changes when a new textbox is clicked on, not when that textbox is no longer active so this check is necessary
             -- remove the last UTF-8 character.
@@ -95,8 +121,8 @@ function love.keypressed(key)
 end
 
 function love.textinput(t)
-    if textbox[activeTextBox].active == true then
-        textbox[activeTextBox].text = textBox[activeTextBox].text .. t
+    if textbox[activeTextBox] and textbox[activeTextBox].active == true then
+        textbox[activeTextBox].text = textbox[activeTextBox].text .. t
     end
 end
  

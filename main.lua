@@ -1,19 +1,21 @@
 http = require("socket.http")
 json = require("libraries.json")
+utf8 = require("utf8")
 local world = require("modules.world")
+
+bFont = love.graphics.newFont(16)
+tFont = love.graphics.newFont(11)
 
 require "libraries.tools"
 require "settings"
 require "libraries.ui"
+require "modules.player"
 
 phase = "world"
 
 
 function love.load()
     world.load()
-
-    font = love.graphics.newFont(16)
-    tFont = love.graphics.newFont(11)
 end
 
 function love.draw()
@@ -21,6 +23,7 @@ function love.draw()
         world.draw()
     end
 
+    drawLoginBox()
     drawUIElements()
 end
 

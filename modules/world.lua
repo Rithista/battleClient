@@ -76,8 +76,6 @@ function world.draw()
         end
     end
 
-   
-
     love.graphics.print("ID : "..tostring(cID).."\nTYPE : "..tostring(world[cID].buildingType))
 end
 
@@ -102,7 +100,7 @@ end
 
 function world.press(x, y, button) -- handles mouse presses when in world phase
    -- updateWorld()
-    setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
+   -- setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
     selectedTile = cID
 end
 

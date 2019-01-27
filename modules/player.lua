@@ -10,6 +10,9 @@ function login(username,password)
         player.authcode = b
         b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
         player = json:decode(b)
+
+        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
+        buildingCount = tonumber(buildingCount)
     else
         love.window.showMessageBox("Unable to login","Username or password is incorrect.")
         player = {}
@@ -26,6 +29,7 @@ function register(username,password)
         player = json:decode(b)
 
         buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
+        buildingCount = tonumber(buildingCount)
     else
         love.window.showMessageBox("Unable to register","An account with this username already exists!")
         player = {}
@@ -53,7 +57,7 @@ function drawPlayerStats()
     love.graphics.setFont(bFont)
     love.graphics.print("King "..player.username)
 
-    if not buildingCount then
+    if buildingCount == 0 then
         love.graphics.print("Choose a tile to place your castle.", 0+bFont:getWidth("King "..player.username.."  "), 0)
     end
 end

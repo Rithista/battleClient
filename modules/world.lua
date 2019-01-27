@@ -33,7 +33,7 @@ function updateWorld()
                 love.graphics.rectangle("fill",x,y,32,32)
             end
 
-            if world[i].units and world[i].units > 0 then
+            if tonumber(world[i].units) and tonumber(world[i].units) > 0 then
 
             end
     
@@ -61,8 +61,8 @@ function world.draw()
             cID = i -- set tile that mouse is over
             love.graphics.setColor(0,0,0,0.8)
             love.graphics.rectangle("line", x-cam.x, y-cam.y, 32, 32)
-            if not buildingCount and player.authcode then
-                if world[cID].buildingType == "Grass" and not tonumber(world[cID].units) then
+            if buildingCount == 0 and player.authcode then
+                if world[cID].buildingType == "Grass" and tonumber(world[cID].units) == 0 then
                     love.graphics.setColor(1,1,1,0.5)
                 else
                     love.graphics.setColor(1,0,0,0.5)
@@ -94,15 +94,15 @@ function world.update(dt)
     local camSpeed = 64*dt
     if love.keyboard.isDown(KEY_CAM_SPEED) then camSpeed = 256*dt end
     
-    if love.keyboard.isDown(KEY_CAM_LEFT) and cam.x ~< 1   then
+    if love.keyboard.isDown(KEY_CAM_LEFT) and cam.x > 1   then
         cam.x = cam.x - camSpeed
-    elseif love.keyboard.isDown(KEY_CAM_RIGHT) and cam.x ~> 100 then
+    elseif love.keyboard.isDown(KEY_CAM_RIGHT) and cam.x+love.graphics.getWidth() < 100*32 then
         cam.x = cam.x + camSpeed
     end
 
-    if love.keyboard.isDown(KEY_CAM_UP) and cam.y ~< 1 then
+    if love.keyboard.isDown(KEY_CAM_UP) and cam.y > 1 then
         cam.y = cam.y - camSpeed
-    elseif love.keyboard.isDown(KEY_CAM_DOWN) and cam.y ~> 100 then
+    elseif love.keyboard.isDown(KEY_CAM_DOWN) and cam.y+love.graphics.getHeight() < 100*32 then
         cam.y = cam.y + camSpeed
     end
 end

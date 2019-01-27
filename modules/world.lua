@@ -4,6 +4,7 @@ worldImg = {}
 worldImg["Grass"] = love.graphics.newImage("assets/Grass.png")
 worldImg["Forest"] = love.graphics.newImage("assets/Forest.png")
 worldImg["Mine"] = love.graphics.newImage("assets/Mine.png")
+worldImg["Castle"] = love.graphics.newImage("assets/Castle.png")
 
 cID = 1 -- the ID of the tile that the cursor is currently over
 selectedTile = 1 -- the ID of the tile that is currently selected
@@ -60,6 +61,14 @@ function world.draw()
             cID = i -- set tile that mouse is over
             love.graphics.setColor(0,0,0,0.8)
             love.graphics.rectangle("line", x-cam.x, y-cam.y, 32, 32)
+            if not buildingCount and player.authcode then
+                if world[cID].buildingType == "Grass" and not tonumber(world[cID].units) then
+                    love.graphics.setColor(1,1,1,0.5)
+                else
+                    love.graphics.setColor(1,0,0,0.5)
+                end
+                love.graphics.draw(worldImg["Castle"], x-cam.x, y-cam.y)
+            end
         end
 
         if i == selectedTile then

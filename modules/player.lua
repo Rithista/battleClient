@@ -24,6 +24,8 @@ function register(username,password)
         b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
         print("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
         player = json:decode(b)
+
+        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
     else
         love.window.showMessageBox("Unable to register","An account with this username already exists!")
         player = {}
@@ -41,5 +43,17 @@ function drawLoginBox()
         drawTextBox(passwordBox)
         if drawButton("Login",10,2+32+tFont:getHeight()*2,180,bFont) then login(textbox[usernameBox].text,textbox[passwordBox].text) end
         if drawButton("Register",10,2+32+tFont:getHeight()*2 + bFont:getHeight(),180,bFont) then register(textbox[usernameBox].text,textbox[passwordBox].text) end
+    end
+end
+
+function drawPlayerStats()
+    love.graphics.setColor(0,0,0,1)
+    love.graphics.rectangle("fill",0,0,love.graphics.getWidth(),24)
+    love.graphics.setColor(1,1,1)
+    love.graphics.setFont(bFont)
+    love.graphics.print("King "..player.username)
+
+    if not buildingCount then
+        love.graphics.print("Choose a tile to place your castle.", 0+bFont:getWidth("King "..player.username.."  "), 0)
     end
 end

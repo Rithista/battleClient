@@ -9,6 +9,7 @@ worldImg["Castle"] = love.graphics.newImage("assets/Castle.png")
 worldImg["House"] = love.graphics.newImage("assets/House.png")
 worldImg["Building"] = love.graphics.newImage("assets/Building.png")
 worldImg["Barracks"] = love.graphics.newImage("assets/Barracks.png")
+worldImg["Farm"] = love.graphics.newImage("assets/Farm.png")
 
 statImg = {
     food = love.graphics.newImage("assets/stats/food.png"),

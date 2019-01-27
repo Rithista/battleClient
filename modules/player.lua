@@ -82,16 +82,26 @@ function drawBuildingBox(x, y)
         if worldImg[v.buildingType] then
             love.graphics.draw(worldImg[v.buildingType], cx, cy)
         end
-            if isMouseOver(cx,cy,32,32) then
-                setTT(v.buildingType,"Costs "..v.goldCost.."g, "..v.woodCost.."w, "..v.stoneCost.."s. Built in "..v.timeToBuild.."m. Generates "..v.depositValue.." "..v.attribute.." every minute.")
-            end
+        if isMouseOver(cx,cy,32,32) then
+            setTT(v.buildingType,"Costs "..v.goldCost.."g, "..v.woodCost.."w, "..v.stoneCost.."s. Built in "..v.timeToBuild.."m. Generates "..v.depositValue.." "..v.attribute.." every minute.")
+            love.graphics.setColor(1,1,1)
 
-            cx = cx + 32
-            if cx > x+320 then
-                cx = x
-                cy = cy + 32
+            if love.mouse.isDown(1) then
+                world[selectedTile].buildingType = "Building"
+                http.request("http://freshplay.co.uk/b/api.php?a=build&position="..selectedTile.."&type="..v.buildingType.."&authcode="..player.authcode)
             end
+        else
+            love.graphics.setColor(0.4,0.4,0.4)
+        end
         
+        love.graphics.rectangle("line",cx,cy,32,32)
+        love.graphics.setColor(1,1,1)
 
+        cx = cx + 32
+        if cx > x+320 then
+            cx = x
+            cy = cy + 32
+        end
+    
     end
 end

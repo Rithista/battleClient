@@ -82,6 +82,14 @@ function world.draw()
             love.graphics.rectangle("fill", x-cam.x, y-cam.y, 32, 32)
         end
 
+        if player.authcode and world[selectedTile].username == player.username and i == selectedTile then
+            love.graphics.setColor(0,0,0.8,0.3)
+            love.graphics.rectangle("fill",x-32-cam.x,y-cam.y,32,32)
+            love.graphics.rectangle("fill",x+32-cam.x,y-cam.y,32,32)
+            love.graphics.rectangle("fill",x-cam.x,y+32-cam.y,32,32)
+            love.graphics.rectangle("fill",x-cam.x,y-32-cam.y,32,32)
+        end
+
         love.graphics.setColor(1,1,1,1)
 
         x = x + 32
@@ -91,7 +99,7 @@ function world.draw()
         end
     end
 
-    if player.authcode and buildable then
+    if player.authcode and buildable and world[selectedTile].username == player.username and world[selectedTile].buildingType == "Grass" then
         love.graphics.setColor(1,1,1,1)
         drawBuildingBox(400,600)
     end
@@ -140,13 +148,17 @@ end
 
 function world.press(x, y, button) -- handles mouse presses when in world phase
    -- updateWorld()
-        setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
-    selectedTile = cID
-
+--  setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
     if buildingCount == 0 and player.authcode then
         http.request("http://freshplay.co.uk/b/api.php?a=build&position="..cID.."&type=Castle&authcode="..player.authcode)
         updateWorld()
+    elseif player.authcode and (cID + 100 == selectedTile or cID - 100 == selectedTile or cID + 1 == selectedTile or cID - 1 == selectedTile) and world[selectedTile].username == player.username then
+        http.request("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&number=1000&authcode="..player.authcode)
+        print("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&authcode="..player.authcode)
+        updateWorld()
     end
+
+    selectedTile = cID
 end
 
 return world

@@ -81,7 +81,7 @@ function world.draw()
             love.graphics.setColor(0,0,0,0.2)
             love.graphics.rectangle("fill", x-cam.x, y-cam.y, 32, 32)
         end
-
+ 
         if player.authcode and world[selectedTile].username == player.username and i == selectedTile then
             love.graphics.setColor(0,0,0.8,0.3)
             love.graphics.rectangle("fill",x-32-cam.x,y-cam.y,32,32)

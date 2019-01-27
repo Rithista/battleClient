@@ -12,7 +12,7 @@ function newFight(atk, def, units, newUnits)
     def = tonumber(def)-1
     tatk = atk
     tdef = def
-    fightAlpha = 300
+    fightAlpha = 4
     troops = {}
     for i = 1, units do
         troops[#troops + 1] = {
@@ -54,9 +54,9 @@ function updateFight(dt)
         end
     end
 
-    if tatk < 1 and tdef < 1 then
-        fightAlpha = fightAlpha - 0.4*dt
-    end
+
+        fightAlpha = fightAlpha - 0.5*dt
+
 end
 
 function drawFight(x,y)

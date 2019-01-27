@@ -104,6 +104,8 @@ function world.draw()
         drawBuildingBox(400,600)
     end
 
+    drawFight(love.graphics.getWidth()/2-100,love.graphics.getHeight()/2-100)
+
     love.graphics.print("ID : "..tostring(cID).."\nTYPE : "..tostring(world[cID].buildingType))
 end
 
@@ -144,6 +146,8 @@ function world.update(dt)
             time.updateWorld = 60
         end
     end
+
+    updateFight(dt)
 end
 
 function world.press(x, y, button) -- handles mouse presses when in world phase
@@ -153,8 +157,12 @@ function world.press(x, y, button) -- handles mouse presses when in world phase
         http.request("http://freshplay.co.uk/b/api.php?a=build&position="..cID.."&type=Castle&authcode="..player.authcode)
         updateWorld()
     elseif player.authcode and (cID + 100 == selectedTile or cID - 100 == selectedTile or cID + 1 == selectedTile or cID - 1 == selectedTile) and world[selectedTile].username == player.username then
-        http.request("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&number=1000&authcode="..player.authcode)
+        b = http.request("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&number="..(world[selectedTile].units-1).."&authcode="..player.authcode)
        -- print("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&authcode="..player.authcode)
+        b = string.gsub(b, "%s+", "")
+        a = atComma(b)
+        if a[2] then newFight(a[1],a[2]) end
+        print(b)
         updateWorld()
         selectedTile = cID
     end

@@ -8,6 +8,7 @@ require "libraries.tools"
 require "settings"
 require "libraries.ui"
 require "modules.player"
+require "modules.fight"
 
 phase = "world"
 

@@ -7,14 +7,14 @@ troop1 = love.graphics.newImage("assets/troop1.png")
 troop2 = love.graphics.newImage("assets/troop2.png")
 deadTroop = love.graphics.newImage("assets/Gravestone.png")
 
-function newFight(atk, def)
+function newFight(atk, def, units, newUnits)
     atk = tonumber(atk)-1
     def = tonumber(def)-1
     tatk = atk
     tdef = def
     fightAlpha = 300
     troops = {}
-    for i = 1, def do
+    for i = 1, units do
         troops[#troops + 1] = {
             x = love.math.random(0, 4),
             y = love.math.random(20,180),
@@ -23,7 +23,7 @@ function newFight(atk, def)
         }
     end
 
-    for i = 1, atk do
+    for i = 1, newUnits do
         troops[#troops + 1] = {
             x = love.math.random(180, 200),
             y = love.math.random(20,180),
@@ -55,7 +55,7 @@ function updateFight(dt)
     end
 
     if tatk < 1 and tdef < 1 then
-        fightAlpha = fightAlpha - 100*dt
+        fightAlpha = fightAlpha - 0.4*dt
     end
 end
 

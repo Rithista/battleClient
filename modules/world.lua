@@ -147,6 +147,10 @@ function world.update(dt)
         end
     end
 
+    if love.keyboard.isDown(KEY_CAM_SPEED) then
+        setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
+    end
+
     updateFight(dt)
 end
 
@@ -161,7 +165,7 @@ function world.press(x, y, button) -- handles mouse presses when in world phase
        -- print("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&authcode="..player.authcode)
         b = string.gsub(b, "%s+", "")
         a = atComma(b)
-        if a[2] then newFight(a[1],a[2]) end
+        if a[2] then newFight(tonumber(a[1]),tonumber(a[2]),tonumber(a[3]),tonumber(a[4])) end
         print(b)
         updateWorld()
         selectedTile = cID

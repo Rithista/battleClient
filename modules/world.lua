@@ -85,15 +85,15 @@ function world.update(dt)
     local camSpeed = 64*dt
     if love.keyboard.isDown(KEY_CAM_SPEED) then camSpeed = 256*dt end
     
-    if love.keyboard.isDown(KEY_CAM_LEFT) then
+    if love.keyboard.isDown(KEY_CAM_LEFT) and cam.x ~< 1   then
         cam.x = cam.x - camSpeed
-    elseif love.keyboard.isDown(KEY_CAM_RIGHT) then
+    elseif love.keyboard.isDown(KEY_CAM_RIGHT) and cam.x ~> 100 then
         cam.x = cam.x + camSpeed
     end
 
-    if love.keyboard.isDown(KEY_CAM_UP) then
+    if love.keyboard.isDown(KEY_CAM_UP) and cam.y ~< 1 then
         cam.y = cam.y - camSpeed
-    elseif love.keyboard.isDown(KEY_CAM_DOWN) then
+    elseif love.keyboard.isDown(KEY_CAM_DOWN) and cam.y ~> 100 then
         cam.y = cam.y + camSpeed
     end
 end

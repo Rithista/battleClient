@@ -117,6 +117,8 @@ function love.keypressed(key)
             -- string.sub operates on bytes rather than UTF-8 characters, so we couldn't do string.sub(text, 1, -2).
             textbox[activeTextBox].text = string.sub(textbox[activeTextBox].text, 1, byteoffset - 1)
         end
+    elseif key == "r" then
+        updateWorld()
     end
 end
 

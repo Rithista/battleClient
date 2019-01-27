@@ -21,6 +21,9 @@ function updateWorld()
         world[i] = v
     end
 
+    buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
+    buildingCount = tonumber(buildingCount)
+
     love.graphics.setCanvas(worldCanvas)
         love.graphics.clear()
         love.graphics.setBlendMode("alpha")
@@ -111,6 +114,11 @@ function world.press(x, y, button) -- handles mouse presses when in world phase
    -- updateWorld()
    -- setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
     selectedTile = cID
+
+    if buildingCount == 0 and player.authcode then
+        http.request("http://freshplay.co.uk/b/api.php?a=build&position="..cID.."&type=Castle&authcode="..player.authcode)
+        updateWorld()
+    end
 end
 
 return world

@@ -8,6 +8,12 @@ selectedTile = 1 -- the ID of the tile that is currently selected
 
 cam = {x = 0, y = 0}
 
+worldPosition = {}
+
+movingUnits = false
+moveTile = 0
+unitMove = {}
+
 function updateWorld(refreshCanvas)
    update:start()
 
@@ -34,19 +40,27 @@ function updateWorldCanvas()
                     love.graphics.rectangle("fill",x,y,32,32)
                 end
 
+                love.math.setRandomSeed(i) -- for position units on tiles
+
                 if tonumber(world[i].units) and tonumber(world[i].units) > 0 then
                     if player.username == world[i].username then
                         love.graphics.setColor(0,0,1)
                     else
                         love.graphics.setColor(1,0,0)
                     end
-
+                    
                     for i = 1, tonumber(world[i].units) do
-                        love.graphics.rectangle("fill",love.math.random(x,x+32),love.math.random(y,y+32),1,1)
+                        local ux = love.math.random(0,32)
+                        local uy = love.math.random(0,32)
+                        love.graphics.rectangle("fill",x+ux,y+uy,1,1)
                     end
                 end
                 love.graphics.setColor(1,1,1)
             --  love.graphics.print(i, x, y)
+                worldPosition[i] = {
+                    x = x,
+                    y = y
+                }
                 x = x + 32
                 if x >= 100*32 then
                     x = 0
@@ -73,7 +87,7 @@ function world.draw()
                 cID = i -- set tile that mouse is over
                 love.graphics.setColor(0,0,0,0.8)
                 love.graphics.rectangle("line", x-cam.x, y-cam.y, 32, 32)
-                if buildingCount == 0 and player.authcode then
+                if buildingCount == 0 and player.authcode then -- draw castle placement for first time users
                     if world[cID].buildingType == "Grass" and tonumber(world[cID].units) == 0 then
                         love.graphics.setColor(1,1,1,0.5)
                     else
@@ -125,6 +139,16 @@ function world.draw()
         if player.authcode and buildable and world[selectedTile].username == player.username and world[selectedTile].buildingType == "Grass" then
             love.graphics.setColor(1,1,1,1)
             drawBuildingBox(400,600)
+        end
+
+        if movingUnits == true then -- unit movement
+            love.graphics.setColor(1,1,1,1)
+            love.graphics.draw(worldImg[world[moveTile].buildingType],worldPosition[moveTile].x-cam.x, worldPosition[moveTile].y-cam.y)
+
+            for i = 1, #unitMove do
+                love.graphics.setColor(0,0,1)
+                love.graphics.rectangle("fill",unitMove[i].x-cam.x,unitMove[i].y-cam.y,1,1)
+            end
         end
 
         drawFight(0,love.graphics.getHeight()/2-100)
@@ -180,6 +204,15 @@ function world.update(dt)
         world = love.thread.getChannel( 'world' ):pop()
         updateWorldCanvas()
     end
+
+    -- moving units
+    for i = 1, #unitMove do
+        local speed = 20*dt
+        if unitMove[i].x < unitMove[i].targetX then unitMove[i].x = unitMove[i].x + speed
+        elseif unitMove[i].x > unitMove[i].targetX then unitMove[i].x = unitMove[i].x - speed end
+        if unitMove[i].y < unitMove[i].targetY then unitMove[i].y = unitMove[i].y + speed
+        elseif unitMove[i].y > unitMove[i].targetY then unitMove[i].y = unitMove[i].y - speed end
+    end
 end
 
 function world.press(x, y, button) -- handles mouse presses when in world phase
@@ -196,17 +229,39 @@ function world.press(x, y, button) -- handles mouse presses when in world phase
         if a[2] then newFight(tonumber(a[1]),tonumber(a[2]),tonumber(a[3]),tonumber(a[4]))
         else
             world[cID].username = player.username
-            world[cID].units = world[cID].units + world[selectedTile].units-1
-            world[selectedTile].units = world[selectedTile].units - world[selectedTile].units-1
+            moveUnits(selectedTile,cID,world[selectedTile].units-1)
+            world[cID].units = world[cID].units + world[selectedTile].units
+            world[selectedTile].units = world[selectedTile].units - world[selectedTile].units + 1
+            selectedTile = cID
             updateWorldCanvas()
         end
-        print(b)
-        updateWorld(true)
+        updateWorld()
         selectedTile = cID
     end
 
     if button == 2 then
         selectedTile = cID
+    end
+end
+
+function moveUnits(currentTile, newTile, amount)
+    unitMove = {}
+    moveTile = newTile
+    movingUnits = true
+    love.math.setRandomSeed(newTile) -- position on tiles is determined by using the id of the tile as a random seed
+    for i = 1, amount do
+        unitMove[#unitMove + 1] = {
+            targetX = worldPosition[newTile].x+love.math.random(0,32),
+            targetY = worldPosition[newTile].y+love.math.random(0,32)
+        }
+    end
+
+
+    love.math.setRandomSeed(currentTile)
+    for i = 1, #unitMove do -- we need to use the randomseed of the last tile to find their original position
+        unitMove[i].x = worldPosition[currentTile].x+love.math.random(0,32)
+        unitMove[i].y = worldPosition[currentTile].y+love.math.random(0,32)
+  
     end
 end
 

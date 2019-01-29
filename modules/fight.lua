@@ -8,27 +8,27 @@ troop2 = love.graphics.newImage("assets/troop2.png")
 deadTroop = love.graphics.newImage("assets/Gravestone.png")
 
 function newFight(atk, def, units, newUnits)
-    atk = tonumber(atk)-1
-    def = tonumber(def)-1
+    atk = tonumber(atk)
+    def = tonumber(def)
     tatk = atk
     tdef = def
-    fightAlpha = 4
+    fightAlpha = 2
     troops = {}
     for i = 1, units do
         troops[#troops + 1] = {
-            x = love.math.random(0, 4),
+            x = love.math.random(0, 100),
             y = love.math.random(20,180),
             dead = false,
-            speed = love.math.random(60,100)
+            speed = love.math.random(400,500)
         }
     end
 
     for i = 1, newUnits do
         troops[#troops + 1] = {
-            x = love.math.random(180, 200),
+            x = love.math.random(love.graphics.getWidth()-100, love.graphics.getWidth()),
             y = love.math.random(20,180),
             dead = false,
-            speed = love.math.random(-100,-60)
+            speed = love.math.random(-500,-400)
         }
     end
 end
@@ -39,14 +39,14 @@ function updateFight(dt)
             troops[i].x = troops[i].x + v.speed*dt
         end
 
-        if troops[i].x > 99 and troops[i].x < 101 then
+        if troops[i].x > love.graphics.getWidth()/2-1 and troops[i].x < love.graphics.getWidth()/2+1 then
             if v.speed > 0 then
-                if tatk > 0 then
+                if tdef > 0 then
                     troops[i].dead = true
                     tatk = tatk - 1
                 end
             elseif v.speed < 0 then
-                if tdef > 0 then
+                if tatk > 0 then
                     troops[i].dead = true
                     tdef = tdef - 1
                 end
@@ -56,12 +56,12 @@ function updateFight(dt)
 
 
         fightAlpha = fightAlpha - 0.5*dt
-
+    if fightAlpha < 0 then troops = {} end
 end
 
 function drawFight(x,y)
     love.graphics.setColor(0,0,0,fightAlpha)
-    love.graphics.rectangle("fill",x,y,200,200)
+    love.graphics.rectangle("fill",x,y,love.graphics.getWidth(),200)
     
     love.graphics.setColor(1,1,1,fightAlpha)
     for i, v in pairs(troops) do

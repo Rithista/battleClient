@@ -1,3 +1,6 @@
+require "modules.updateWorld"
+update = love.thread.newThread(updateCode)
+
 world = {}
 
 cID = 1 -- the ID of the tile that the cursor is currently over
@@ -5,127 +8,129 @@ selectedTile = 1 -- the ID of the tile that is currently selected
 
 cam = {x = 0, y = 0}
 
-function updateWorld()
-    world = {}
+function updateWorld(refreshCanvas)
+   update:start()
 
-    b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=world")
-
-    world_decoded = json:decode(b)
-    for i, v in pairs(world_decoded) do
-        world[i] = v
-    end
+   refereshCanvas = true
 
     if player.authcode then
-        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
-        buildingCount = tonumber(buildingCount)
+        --buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
+      --  buildingCount = tonumber(buildingCount)
     end
+end
 
-    love.graphics.setCanvas(worldCanvas)
-        love.graphics.clear()
-        love.graphics.setBlendMode("alpha")
+function updateWorldCanvas()
+    if world and world[1] then
+            
+        love.graphics.setCanvas(worldCanvas)
+            love.graphics.clear()
+            love.graphics.setBlendMode("alpha")
+            local x = 0
+            local y = 0
+            for i = 1, 100*100 do
+                if worldImg[world[i].buildingType] then
+                    love.graphics.draw(worldImg[world[i].buildingType], x, y)
+                else
+                    love.graphics.rectangle("fill",x,y,32,32)
+                end
+
+                if tonumber(world[i].units) and tonumber(world[i].units) > 0 then
+                    if player.username == world[i].username then
+                        love.graphics.setColor(0,0,1)
+                    else
+                        love.graphics.setColor(1,0,0)
+                    end
+
+                    for i = 1, tonumber(world[i].units) do
+                        love.graphics.rectangle("fill",love.math.random(x,x+32),love.math.random(y,y+32),1,1)
+                    end
+                end
+                love.graphics.setColor(1,1,1)
+            --  love.graphics.print(i, x, y)
+                x = x + 32
+                if x >= 100*32 then
+                    x = 0
+                    y = y + 32
+                end
+            end
+        love.graphics.setCanvas()
+    end
+end
+
+function world.load()
+    worldCanvas = love.graphics.newCanvas(100*32, 100*32)
+    updateWorld(true)
+end
+
+function world.draw()
+    if world and world[1] then
+        love.graphics.draw(worldCanvas,-cam.x,-cam.y)
+
         local x = 0
         local y = 0
         for i = 1, 100*100 do
-            if worldImg[world[i].buildingType] then
-                love.graphics.draw(worldImg[world[i].buildingType], x, y)
-            else
-                love.graphics.rectangle("fill",x,y,32,32)
-            end
-
-            if tonumber(world[i].units) and tonumber(world[i].units) > 0 then
-                if player.username == world[i].username then
-                    love.graphics.setColor(0,0,1)
-                else
-                    love.graphics.setColor(1,0,0)
-                end
-
-                for i = 1, tonumber(world[i].units) do
-                    love.graphics.rectangle("fill",love.math.random(x,x+32),love.math.random(y,y+32),1,1)
+            if isMouseOver(x-cam.x, y-cam.y, 32, 32) then
+                cID = i -- set tile that mouse is over
+                love.graphics.setColor(0,0,0,0.8)
+                love.graphics.rectangle("line", x-cam.x, y-cam.y, 32, 32)
+                if buildingCount == 0 and player.authcode then
+                    if world[cID].buildingType == "Grass" and tonumber(world[cID].units) == 0 then
+                        love.graphics.setColor(1,1,1,0.5)
+                    else
+                        love.graphics.setColor(1,0,0,0.5)
+                    end
+                    love.graphics.draw(worldImg["Castle"], x-cam.x, y-cam.y)
                 end
             end
-            love.graphics.setColor(1,1,1)
-          --  love.graphics.print(i, x, y)
+
+            if i == selectedTile then
+                love.graphics.setColor(0,0,0,0.2)
+                love.graphics.rectangle("fill", x-cam.x, y-cam.y, 32, 32)
+            end
+    
+            -- draw movement buttons
+            if player.authcode and world[selectedTile].username == player.username and i == selectedTile then
+                love.graphics.setColor(0,0,0.8,0.3)
+                love.graphics.rectangle("fill",x-32-cam.x,y-cam.y,32,32)
+                love.graphics.rectangle("fill",x+32-cam.x,y-cam.y,32,32)
+                love.graphics.rectangle("fill",x-cam.x,y+32-cam.y,32,32)
+                love.graphics.rectangle("fill",x-cam.x,y-32-cam.y,32,32)
+            end
+
+            -- draw peaking
+        -- if love.keyboard.isDown(KEY_PEAK) then
+                if distanceFrom(cx,cy,x-cam.x,y-cam.y) < 200 and world[i].username ~= "Mother Nature" then
+                    local alpha = 1-distanceFrom(cx-16,cy-16,x-cam.x,y-cam.y)/300
+                    love.graphics.setColor(0,0,0,alpha)
+                    if love.keyboard.isDown(KEY_PEAK) then  love.graphics.rectangle("fill",x-cam.x,y-cam.y,32,tFont:getHeight()) end
+                    if player.username == world[i].username then
+                        love.graphics.setColor(1,0.84,0.26,alpha)
+                    else
+                        love.graphics.setColor(1,0,0,alpha)
+                    end
+
+                    love.graphics.print(world[i].units, x-cam.x, y-cam.y)
+                end
+        --  end
+
+            love.graphics.setColor(1,1,1,1)
+
             x = x + 32
             if x >= 100*32 then
                 x = 0
                 y = y + 32
             end
         end
-    love.graphics.setCanvas()
-end
 
-function world.load()
-    worldCanvas = love.graphics.newCanvas(100*32, 100*32)
-    updateWorld()
-end
-
-function world.draw()
-    love.graphics.draw(worldCanvas,-cam.x,-cam.y)
-
-    local x = 0
-    local y = 0
-    for i = 1, 100*100 do
-        if isMouseOver(x-cam.x, y-cam.y, 32, 32) then
-            cID = i -- set tile that mouse is over
-            love.graphics.setColor(0,0,0,0.8)
-            love.graphics.rectangle("line", x-cam.x, y-cam.y, 32, 32)
-            if buildingCount == 0 and player.authcode then
-                if world[cID].buildingType == "Grass" and tonumber(world[cID].units) == 0 then
-                    love.graphics.setColor(1,1,1,0.5)
-                else
-                    love.graphics.setColor(1,0,0,0.5)
-                end
-                love.graphics.draw(worldImg["Castle"], x-cam.x, y-cam.y)
-            end
+        if player.authcode and buildable and world[selectedTile].username == player.username and world[selectedTile].buildingType == "Grass" then
+            love.graphics.setColor(1,1,1,1)
+            drawBuildingBox(400,600)
         end
 
-        if i == selectedTile then
-            love.graphics.setColor(0,0,0,0.2)
-            love.graphics.rectangle("fill", x-cam.x, y-cam.y, 32, 32)
-        end
- 
-        -- draw movement buttons
-        if player.authcode and world[selectedTile].username == player.username and i == selectedTile then
-            love.graphics.setColor(0,0,0.8,0.3)
-            love.graphics.rectangle("fill",x-32-cam.x,y-cam.y,32,32)
-            love.graphics.rectangle("fill",x+32-cam.x,y-cam.y,32,32)
-            love.graphics.rectangle("fill",x-cam.x,y+32-cam.y,32,32)
-            love.graphics.rectangle("fill",x-cam.x,y-32-cam.y,32,32)
-        end
+        drawFight(0,love.graphics.getHeight()/2-100)
 
-        -- draw peaking
-       -- if love.keyboard.isDown(KEY_PEAK) then
-            if distanceFrom(cx,cy,x-cam.x,y-cam.y) < 200 and world[i].username ~= "Mother Nature" then
-                local alpha = 1-distanceFrom(cx-16,cy-16,x-cam.x,y-cam.y)/300
-                love.graphics.setColor(0,0,0,alpha)
-                if love.keyboard.isDown(KEY_PEAK) then  love.graphics.rectangle("fill",x-cam.x,y-cam.y,32,tFont:getHeight()) end
-                if player.username == world[i].username then
-                    love.graphics.setColor(1,0.84,0.26,alpha)
-                else
-                    love.graphics.setColor(1,0,0,alpha)
-                end
-
-                love.graphics.print(world[i].units, x-cam.x, y-cam.y)
-            end
-      --  end
-
-        love.graphics.setColor(1,1,1,1)
-
-        x = x + 32
-        if x >= 100*32 then
-            x = 0
-            y = y + 32
-        end
+        love.graphics.print("ID : "..tostring(cID).."\nTYPE : "..tostring(world[cID].buildingType))
     end
-
-    if player.authcode and buildable and world[selectedTile].username == player.username and world[selectedTile].buildingType == "Grass" then
-        love.graphics.setColor(1,1,1,1)
-        drawBuildingBox(400,600)
-    end
-
-    drawFight(love.graphics.getWidth()/2-100,love.graphics.getHeight()/2-100)
-
-    love.graphics.print("ID : "..tostring(cID).."\nTYPE : "..tostring(world[cID].buildingType))
 end
 
 function world.update(dt)
@@ -171,6 +176,10 @@ function world.update(dt)
     end
 
     updateFight(dt)
+    if love.thread.getChannel( 'world' ):getCount() and love.thread.getChannel( 'world' ):getCount() > 0 then
+        world = love.thread.getChannel( 'world' ):pop()
+        updateWorldCanvas()
+    end
 end
 
 function world.press(x, y, button) -- handles mouse presses when in world phase
@@ -184,9 +193,15 @@ function world.press(x, y, button) -- handles mouse presses when in world phase
        -- print("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&authcode="..player.authcode)
         b = string.gsub(b, "%s+", "")
         a = atComma(b)
-        if a[2] then newFight(tonumber(a[1]),tonumber(a[2]),tonumber(a[3]),tonumber(a[4])) end
+        if a[2] then newFight(tonumber(a[1]),tonumber(a[2]),tonumber(a[3]),tonumber(a[4]))
+        else
+            world[cID].username = player.username
+            world[cID].units = world[cID].units + world[selectedTile].units-1
+            world[selectedTile].units = world[selectedTile].units - world[selectedTile].units-1
+            updateWorldCanvas()
+        end
         print(b)
-        updateWorld()
+        updateWorld(true)
         selectedTile = cID
     end
 

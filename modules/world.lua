@@ -104,10 +104,29 @@ function world.draw()
     
             -- draw movement buttons
             if player.authcode and world[selectedTile].username == player.username and i == selectedTile then
-                love.graphics.setColor(0,0,0.8,0.3)
+                if world[selectedTile-1].username ~= player.username then
+                    love.graphics.setColor(0.8,0,0,0.3)
+                else
+                    love.graphics.setColor(0,0,0.8,0.3)
+                end
                 love.graphics.rectangle("fill",x-32-cam.x,y-cam.y,32,32)
+                if world[selectedTile+1].username ~= player.username then
+                    love.graphics.setColor(0.8,0,0,0.3)
+                else
+                    love.graphics.setColor(0,0,0.8,0.3)
+                end
                 love.graphics.rectangle("fill",x+32-cam.x,y-cam.y,32,32)
+                if world[selectedTile+100].username ~= player.username then
+                    love.graphics.setColor(0.8,0,0,0.3)
+                else
+                    love.graphics.setColor(0,0,0.8,0.3)
+                end
                 love.graphics.rectangle("fill",x-cam.x,y+32-cam.y,32,32)
+                if world[selectedTile-100].username ~= player.username then
+                    love.graphics.setColor(0.8,0,0,0.3)
+                else
+                    love.graphics.setColor(0,0,0.8,0.3)
+                end
                 love.graphics.rectangle("fill",x-cam.x,y-32-cam.y,32,32)
             end
 
@@ -226,7 +245,7 @@ function world.press(x, y, button) -- handles mouse presses when in world phase
        -- print("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&authcode="..player.authcode)
         b = string.gsub(b, "%s+", "")
         a = atComma(b)
-        if a[2] then newFight(tonumber(a[1]),tonumber(a[2]),tonumber(a[3]),tonumber(a[4]))
+        if a[2] then newFight(tonumber(a[1]),tonumber(a[2]),tonumber(a[3]),tonumber(a[4])) print(b)
         else
             world[cID].username = player.username
             moveUnits(selectedTile,cID,world[selectedTile].units-1)
@@ -261,7 +280,6 @@ function moveUnits(currentTile, newTile, amount)
     for i = 1, #unitMove do -- we need to use the randomseed of the last tile to find their original position
         unitMove[i].x = worldPosition[currentTile].x+love.math.random(0,32)
         unitMove[i].y = worldPosition[currentTile].y+love.math.random(0,32)
-  
     end
 end
 

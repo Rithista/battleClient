@@ -10,11 +10,11 @@ deadTroop = love.graphics.newImage("assets/Gravestone.png")
 function newFight(atk, def, units, newUnits)
     atk = tonumber(atk)
     def = tonumber(def)
-    tatk = atk
-    tdef = def
+    tatk = def
+    tdef = atk
     fightAlpha = 2
     troops = {}
-    for i = 1, units do
+    for i = 1, newUnits do
         troops[#troops + 1] = {
             x = love.math.random(0, 100),
             y = love.math.random(20,180),
@@ -23,7 +23,7 @@ function newFight(atk, def, units, newUnits)
         }
     end
 
-    for i = 1, newUnits do
+    for i = 1, units do
         troops[#troops + 1] = {
             x = love.math.random(love.graphics.getWidth()-100, love.graphics.getWidth()),
             y = love.math.random(20,180),
@@ -39,14 +39,14 @@ function updateFight(dt)
             troops[i].x = troops[i].x + v.speed*dt
         end
 
-        if troops[i].x > love.graphics.getWidth()/2-1 and troops[i].x < love.graphics.getWidth()/2+1 then
+        if troops[i].x > love.graphics.getWidth()/2-10 and troops[i].x < love.graphics.getWidth()/2+10 then
             if v.speed > 0 then
-                if tdef > 0 then
+                if tatk > 0 and not troops[i].dead then
                     troops[i].dead = true
                     tatk = tatk - 1
                 end
             elseif v.speed < 0 then
-                if tatk > 0 then
+                if tdef > 0 and not troops[i].dead then
                     troops[i].dead = true
                     tdef = tdef - 1
                 end

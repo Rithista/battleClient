@@ -34,15 +34,17 @@ function updateWorld()
 
             if tonumber(world[i].units) and tonumber(world[i].units) > 0 then
                 if player.username == world[i].username then
-                    love.graphics.setColor(1,0.84,0.26)
+                    love.graphics.setColor(0,0,1)
                 else
                     love.graphics.setColor(1,0,0)
                 end
 
-                love.graphics.print(world[i].units, x, y)
+                for i = 1, tonumber(world[i].units) do
+                    love.graphics.rectangle("fill",love.math.random(x,x+32),love.math.random(y,y+32),1,1)
+                end
             end
             love.graphics.setColor(1,1,1)
-    
+          --  love.graphics.print(i, x, y)
             x = x + 32
             if x >= 100*32 then
                 x = 0
@@ -82,6 +84,7 @@ function world.draw()
             love.graphics.rectangle("fill", x-cam.x, y-cam.y, 32, 32)
         end
  
+        -- draw movement buttons
         if player.authcode and world[selectedTile].username == player.username and i == selectedTile then
             love.graphics.setColor(0,0,0.8,0.3)
             love.graphics.rectangle("fill",x-32-cam.x,y-cam.y,32,32)
@@ -89,6 +92,22 @@ function world.draw()
             love.graphics.rectangle("fill",x-cam.x,y+32-cam.y,32,32)
             love.graphics.rectangle("fill",x-cam.x,y-32-cam.y,32,32)
         end
+
+        -- draw peaking
+       -- if love.keyboard.isDown(KEY_PEAK) then
+            if distanceFrom(cx,cy,x-cam.x,y-cam.y) < 200 and world[i].username ~= "Mother Nature" then
+                local alpha = 1-distanceFrom(cx-16,cy-16,x-cam.x,y-cam.y)/300
+                love.graphics.setColor(0,0,0,alpha)
+                if love.keyboard.isDown(KEY_PEAK) then  love.graphics.rectangle("fill",x-cam.x,y-cam.y,32,tFont:getHeight()) end
+                if player.username == world[i].username then
+                    love.graphics.setColor(1,0.84,0.26,alpha)
+                else
+                    love.graphics.setColor(1,0,0,alpha)
+                end
+
+                love.graphics.print(world[i].units, x-cam.x, y-cam.y)
+            end
+      --  end
 
         love.graphics.setColor(1,1,1,1)
 

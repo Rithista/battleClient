@@ -117,6 +117,9 @@ function love.keypressed(key)
             -- string.sub operates on bytes rather than UTF-8 characters, so we couldn't do string.sub(text, 1, -2).
             textbox[activeTextBox].text = string.sub(textbox[activeTextBox].text, 1, byteoffset - 1)
         end
+    elseif key == "p" then
+        local screenshot = worldCanvas:newImageData()
+        screenshot:encode('png', os.time() .. '.png');
     elseif key == "r" then
         updateWorld()
     end

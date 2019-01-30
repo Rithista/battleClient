@@ -19,6 +19,7 @@ time = {
 
 function love.load()
     world.load()
+    love.filesystem.setIdentity("battle-client")
 end
 
 function love.draw()

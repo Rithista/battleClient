@@ -18,11 +18,6 @@ function updateWorld(refreshCanvas)
    update:start()
 
    refereshCanvas = true
-
-    if player.authcode then
-        --buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
-      --  buildingCount = tonumber(buildingCount)
-    end
 end
 
 function updateWorldCanvas()
@@ -215,7 +210,12 @@ function world.update(dt)
     end
 
     if love.keyboard.isDown(KEY_CAM_SPEED) then
-        setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
+        if world[cID].buildingType == "Building" then
+            local construct = atComma(world[cID].special)
+            setTT("Tile Information",world[cID].buildingType.." a "..construct[2].." ("..construct[1].." minutes remaining), owned by "..world[cID].username..".")
+        else
+            setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
+        end
     end
 
     updateFight(dt)
@@ -225,12 +225,16 @@ function world.update(dt)
     end
 
     -- moving units
+    movingUnits = false -- any unit not in their correct position will set this to true
     for i = 1, #unitMove do
-        local speed = 20*dt
+        local speed = 40*dt
         if unitMove[i].x < unitMove[i].targetX then unitMove[i].x = unitMove[i].x + speed
         elseif unitMove[i].x > unitMove[i].targetX then unitMove[i].x = unitMove[i].x - speed end
         if unitMove[i].y < unitMove[i].targetY then unitMove[i].y = unitMove[i].y + speed
         elseif unitMove[i].y > unitMove[i].targetY then unitMove[i].y = unitMove[i].y - speed end
+        if distanceFrom(unitMove[i].x,unitMove[i].y,unitMove[i].targetX,unitMove[i].targetY) > 3 then -- check whether all units are now in their position
+            movingUnits = true 
+        end
     end
 end
 
@@ -239,13 +243,15 @@ function world.press(x, y, button) -- handles mouse presses when in world phase
 --  setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
     if buildingCount == 0 and player.authcode then
         http.request("http://freshplay.co.uk/b/api.php?a=build&position="..cID.."&type=Castle&authcode="..player.authcode)
+        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
+        buildingCount = tonumber(buildingCount)
         updateWorld()
     elseif player.authcode and (cID + 100 == selectedTile or cID - 100 == selectedTile or cID + 1 == selectedTile or cID - 1 == selectedTile) and world[selectedTile].username == player.username then
         b = http.request("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&number="..(world[selectedTile].units-1).."&authcode="..player.authcode)
        -- print("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&authcode="..player.authcode)
         b = string.gsub(b, "%s+", "")
         a = atComma(b)
-        if a[2] then newFight(tonumber(a[1]),tonumber(a[2]),tonumber(a[3]),tonumber(a[4])) print(b)
+        if a[2] then newFight(tonumber(a[1]),tonumber(a[2]),tonumber(a[3]),tonumber(a[4]))
         else
             world[cID].username = player.username
             moveUnits(selectedTile,cID,world[selectedTile].units-1)

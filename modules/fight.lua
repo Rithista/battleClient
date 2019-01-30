@@ -39,7 +39,7 @@ function updateFight(dt)
             troops[i].x = troops[i].x + v.speed*dt
         end
 
-        if troops[i].x > love.graphics.getWidth()/2-10 and troops[i].x < love.graphics.getWidth()/2+10 then
+        if troops[i].x > love.graphics.getWidth()/2-16 and troops[i].x < love.graphics.getWidth()/2+16 then
             if v.speed > 0 then
                 if tatk > 0 and not troops[i].dead then
                     troops[i].dead = true

@@ -9,6 +9,13 @@ tooltip = {
 textbox = {}
 activeTextBox = nil
 
+map = {
+    canvas = love.graphics.newCanvas(100,100),
+    x = 0,
+    y = 0,
+    open = false
+}
+
 function setTT(title, desc)
     tooltip.title = title
     tooltip.desc = desc
@@ -94,6 +101,36 @@ end
 
 function drawUIElements()
     drawTT()
+    if map.open then love.graphics.draw(map.canvas,map.x,map.y) end
+end
+
+function updateMap()
+    if map.open == true then map.open = false else
+        map.open = true
+        map.x = cx
+        map.y = cy
+        love.graphics.setCanvas(map.canvas)
+            local x = 0
+            local y = 0
+            for i = 1, 100*100 do
+                if world[i].username == player.username then
+                    love.graphics.setColor(0,0,1)
+                elseif world[i].username == "Mother Nature" then
+                    love.graphics.setColor(0.5,0.5,0.5)
+                else
+                    love.graphics.setColor(1,0,0)
+                end
+
+                love.graphics.rectangle("fill",x,y,1,1)
+                
+                x = x + 1
+                if x > 100 then
+                    x = 0
+                    y = y + 1
+                end
+            end
+        love.graphics.setCanvas()
+        end
 end
 
 function uiPress(x,y)
@@ -120,6 +157,8 @@ function love.keypressed(key)
     elseif key == "p" then
         local screenshot = worldCanvas:newImageData()
         screenshot:encode('png', os.time() .. '.png');
+    elseif key == KEY_MAP and player.authcode then
+        updateMap()
     elseif key == "r" then
         updateWorld()
     end

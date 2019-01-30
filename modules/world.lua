@@ -75,6 +75,16 @@ function world.draw()
     if world and world[1] then
         love.graphics.draw(worldCanvas,-cam.x,-cam.y)
 
+        if movingUnits == true then -- unit movement
+            love.graphics.setColor(1,1,1,1)
+            love.graphics.draw(worldImg[world[moveTile].buildingType],worldPosition[moveTile].x-cam.x, worldPosition[moveTile].y-cam.y)
+
+            for i = 1, #unitMove do
+                love.graphics.setColor(0,0,1)
+                love.graphics.rectangle("fill",unitMove[i].x-cam.x,unitMove[i].y-cam.y,1,1)
+            end
+        end
+        
         local x = 0
         local y = 0
         for i = 1, 100*100 do
@@ -155,15 +165,7 @@ function world.draw()
             drawBuildingBox(400,600)
         end
 
-        if movingUnits == true then -- unit movement
-            love.graphics.setColor(1,1,1,1)
-            love.graphics.draw(worldImg[world[moveTile].buildingType],worldPosition[moveTile].x-cam.x, worldPosition[moveTile].y-cam.y)
-
-            for i = 1, #unitMove do
-                love.graphics.setColor(0,0,1)
-                love.graphics.rectangle("fill",unitMove[i].x-cam.x,unitMove[i].y-cam.y,1,1)
-            end
-        end
+      
 
         drawFight(0,love.graphics.getHeight()/2-100)
 
@@ -227,7 +229,7 @@ function world.update(dt)
     -- moving units
     movingUnits = false -- any unit not in their correct position will set this to true
     for i = 1, #unitMove do
-        local speed = 40*dt
+        local speed = 28*dt
         if unitMove[i].x < unitMove[i].targetX then unitMove[i].x = unitMove[i].x + speed
         elseif unitMove[i].x > unitMove[i].targetX then unitMove[i].x = unitMove[i].x - speed end
         if unitMove[i].y < unitMove[i].targetY then unitMove[i].y = unitMove[i].y + speed
@@ -251,13 +253,13 @@ function world.press(x, y, button) -- handles mouse presses when in world phase
        -- print("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&authcode="..player.authcode)
         b = string.gsub(b, "%s+", "")
         a = atComma(b)
-        if a[2] then newFight(tonumber(a[1]),tonumber(a[2]),tonumber(a[3]),tonumber(a[4]))
+        if a[2] then newFight(tonumber(a[1]),tonumber(a[2]),tonumber(a[3]),tonumber(a[4])) -- start fight animation
         else
-            world[cID].username = player.username
-            moveUnits(selectedTile,cID,world[selectedTile].units-1)
-            world[cID].units = world[cID].units + world[selectedTile].units
+            world[cID].username = player.username -- set local tile info to match what server should return
+            moveUnits(selectedTile,cID,world[selectedTile].units-1) -- begin unit movement
+            world[cID].units = world[cID].units + world[selectedTile].units-1
             world[selectedTile].units = world[selectedTile].units - world[selectedTile].units + 1
-            selectedTile = cID
+            selectedTile = cID -- select the destination tile to make movement easier
             updateWorldCanvas()
         end
         updateWorld()

@@ -124,7 +124,7 @@ function updateMap()
                 love.graphics.rectangle("fill",x,y,1,1)
                 
                 x = x + 1
-                if x > 100 then
+                if x >= 100 then
                     x = 0
                     y = y + 1
                 end
@@ -159,6 +159,9 @@ function love.keypressed(key)
         screenshot:encode('png', os.time() .. '.png');
     elseif key == KEY_MAP and player.authcode then
         updateMap()
+    elseif key == "space" then
+        cam.x = round(cam.x)
+        cam.y = round(cam.y)
     elseif key == "r" then
         updateWorld()
     end

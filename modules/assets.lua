@@ -12,10 +12,12 @@ worldImg["Barracks"] = love.graphics.newImage("assets/Barracks.png")
 worldImg["Farm"] = love.graphics.newImage("assets/Farm.png")
 worldImg["Skeleton"] = love.graphics.newImage("assets/Skeleton.png")
 worldImg["Wall"] = love.graphics.newImage("assets/Wall.png")
+worldImg["Outpost"] = love.graphics.newImage("assets/Outpost.png")
 
 statImg = {
     food = love.graphics.newImage("assets/stats/food.png"),
     gold = love.graphics.newImage("assets/stats/gold.png"),
     pop = love.graphics.newImage("assets/stats/population.png"),
-    wood = love.graphics.newImage("assets/stats/wood.png")
+    wood = love.graphics.newImage("assets/stats/wood.png"),
+    stone = love.graphics.newImage("assets/stats/stone.png")
 }

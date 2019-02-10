@@ -47,7 +47,7 @@ function updateWorldCanvas()
                     for i = 1, tonumber(world[i].units) do
                         local ux = love.math.random(0,32)
                         local uy = love.math.random(0,32)
-                        love.graphics.rectangle("fill",x+ux,y+uy,1,1)
+                      --  love.graphics.rectangle("fill",x+ux,y+uy,1,1)
                     end
                 end
                 love.graphics.setColor(1,1,1)
@@ -142,12 +142,28 @@ function world.draw()
                     love.graphics.setColor(0,0,0,alpha)
                     if love.keyboard.isDown(KEY_PEAK) then  love.graphics.rectangle("fill",x-cam.x,y-cam.y,32,tFont:getHeight()) end
                     if player.username == world[i].username then
-                        love.graphics.setColor(1,0.84,0.26,alpha)
+                        love.graphics.setColor(0,0,1,alpha)
                     else
                         love.graphics.setColor(1,0,0,alpha)
                     end
 
                     love.graphics.print(world[i].units, x-cam.x, y-cam.y)
+
+                    love.math.setRandomSeed(i) -- for position units on tiles
+
+                    if tonumber(world[i].units) and tonumber(world[i].units) > 0 then
+                        if player.username == world[i].username then
+                            love.graphics.setColor(0,0,1,alpha)
+                        else
+                            love.graphics.setColor(1,0,0,alpha)
+                        end
+                        
+                        for i = 1, tonumber(world[i].units) do
+                            local ux = love.math.random(0,32)
+                            local uy = love.math.random(0,32)
+                            love.graphics.rectangle("fill",x+ux-cam.x,y+uy-cam.y,1,1)
+                        end
+                    end
                 end
         --  end
 

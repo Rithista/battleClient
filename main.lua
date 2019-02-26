@@ -21,8 +21,8 @@ time = {
 function love.load()
     world.load()
     love.filesystem.setIdentity("battle-client")
-
-    loadScript("example.lua")
+    
+  --  loadScript("example.lua")
 end
 
 function love.draw()
@@ -34,9 +34,10 @@ function love.draw()
         end
     end
 
-    if not authcode then drawLoginBox() end
+    if script.loaded == true then drawScriptControls()
+    elseif not authcode then drawLoginBox() end
     drawUIElements()
-    drawScriptTimer()
+    
 end
 
 

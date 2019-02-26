@@ -8,6 +8,7 @@ function login(username,password)
     b = string.gsub(b, "%s+", "")
     if tonumber(b) then
         player.authcode = b
+        
         b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
         player = json:decode(b)
 

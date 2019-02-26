@@ -9,6 +9,7 @@ require "settings"
 require "libraries.ui"
 require "modules.player"
 require "modules.fight"
+require "modules.api"
 
 phase = "world"
 
@@ -20,6 +21,8 @@ time = {
 function love.load()
     world.load()
     love.filesystem.setIdentity("battle-client")
+
+    loadScript("example.lua")
 end
 
 function love.draw()
@@ -31,8 +34,9 @@ function love.draw()
         end
     end
 
-    drawLoginBox()
+    if not authcode then drawLoginBox() end
     drawUIElements()
+    drawScriptTimer()
 end
 
 
@@ -42,6 +46,7 @@ function love.update(dt)
     end
 
     updateUIElements(dt)
+    updateScript(dt)
 end
 
 function love.mousepressed(x, y, button, istouch)

@@ -5,32 +5,34 @@ passwordBox = addTextBox(0,32+tFont:getHeight(),200,tFont,"password")
 scriptBox = addTextBox(0,54+tFont:getHeight()*4,200,tFont,"example.lua")
 
 function login(username,password)
-    b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=login&username="..username.."&password="..password)
-    b = string.gsub(b, "%s+", "")
-    if tonumber(b) then
-        player.authcode = b
-        
-        b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
-        player = json:decode(b)
 
-        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
+    b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=login&username="..username.."&password="..password)
+
+    b = string.gsub(b, "%s+", "")
+ 
+    if tonumber(b) then
+        authcode = b
+        b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..authcode)
+        player = json:decode(b)
+        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..authcode)
         buildingCount = tonumber(buildingCount)
     else
         love.window.showMessageBox("Unable to login","Username or password is incorrect.")
         player = {}
     end
+
 end
 
 function register(username,password)
     b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=register&username="..username.."&password="..password)
     b = string.gsub(b, "%s+", "")
     if tonumber(b) then
-        player.authcode = b
-        b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
-        print("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
+        authcode = b
+        b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..authcode)
+        print("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..authcode)
         player = json:decode(b)
 
-        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
+        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..authcode)
         buildingCount = tonumber(buildingCount)
     else
         love.window.showMessageBox("Unable to register","An account with this username already exists!")
@@ -39,7 +41,7 @@ function register(username,password)
 end
 
 function drawLoginBox()
-    if not player.authcode then
+    if not authcode then
         love.graphics.setColor(0,0,0,1)
         love.graphics.rectangle("fill",0,0,200,140)
         love.graphics.setColor(1,1,1,1)
@@ -114,7 +116,7 @@ function drawBuildingBox(x, y)
                 if love.mouse.isDown(1) then
                     --print("submitted build request")
                     world[selectedTile].buildingType = "Building"
-                    http.request("http://freshplay.co.uk/b/api.php?a=build&position="..selectedTile.."&type="..v.buildingType.."&authcode="..player.authcode)
+                    http.request("http://freshplay.co.uk/b/api.php?a=build&position="..selectedTile.."&type="..v.buildingType.."&authcode="..authcode)
                     selectedTile = 1
                     time.updateWorld = 0
                     time.updateUser = 1

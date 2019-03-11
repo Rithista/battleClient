@@ -92,7 +92,7 @@ function world.draw()
                 cID = i -- set tile that mouse is over
                 love.graphics.setColor(0,0,0,0.8)
                 love.graphics.rectangle("line", x-cam.x, y-cam.y, 32, 32)
-                if buildingCount == 0 and player.authcode then -- draw castle placement for first time users
+                if buildingCount == 0 and authcode then -- draw castle placement for first time users
                     if world[cID].buildingType == "Grass" and tonumber(world[cID].units) == 0 then
                         love.graphics.setColor(1,1,1,0.5)
                     else
@@ -108,26 +108,26 @@ function world.draw()
             end
     
             -- draw movement buttons
-            if player.authcode and world[selectedTile].username == player.username and i == selectedTile then
-                if world[selectedTile-1].username ~= player.username then
+            if authcode and world[selectedTile] and player.username and world[selectedTile].username == player.username and i == selectedTile then
+                if world[selectedTile-1] and world[selectedTile-1].username ~= player.username then
                     love.graphics.setColor(0.8,0,0,0.3)
                 else
                     love.graphics.setColor(0,0,0.8,0.3)
                 end
                 love.graphics.rectangle("fill",x-32-cam.x,y-cam.y,32,32)
-                if world[selectedTile+1].username ~= player.username then
+                if world[selectedTile+1] and world[selectedTile+1].username ~= player.username then
                     love.graphics.setColor(0.8,0,0,0.3)
                 else
                     love.graphics.setColor(0,0,0.8,0.3)
                 end
                 love.graphics.rectangle("fill",x+32-cam.x,y-cam.y,32,32)
-                if world[selectedTile+100].username ~= player.username then
+                if world[selectedTile+100] and world[selectedTile+100].username ~= player.username then
                     love.graphics.setColor(0.8,0,0,0.3)
                 else
                     love.graphics.setColor(0,0,0.8,0.3)
                 end
                 love.graphics.rectangle("fill",x-cam.x,y+32-cam.y,32,32)
-                if world[selectedTile-100].username ~= player.username then
+                if world[selectedTile-100] and world[selectedTile-100].username ~= player.username then
                     love.graphics.setColor(0.8,0,0,0.3)
                 else
                     love.graphics.setColor(0,0,0.8,0.3)
@@ -176,7 +176,7 @@ function world.draw()
             end
         end
 
-        if player.authcode and buildable and world[selectedTile].username == player.username and world[selectedTile].buildingType == "Grass" then
+        if authcode and buildable and world[selectedTile].username == player.username and world[selectedTile].buildingType == "Grass" then
             love.graphics.setColor(1,1,1,1)
             drawBuildingBox(400,600)
         end
@@ -207,17 +207,17 @@ function world.update(dt)
         cam.y = cam.y + camSpeed
     end
 
-    if player.authcode then
+    if authcode then
         for i, v in pairs(time) do
             time[i] = time[i] - 1*dt
         end
 
         if time.updateUser < 0 then
-            b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
+            b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..authcode)
             player = json:decode(b)
             time.updateUser = 30
 
-            b = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildable&authcode="..player.authcode)
+            b = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildable&authcode="..authcode)
             buildable = json:decode(b)
         end
 
@@ -259,14 +259,15 @@ end
 function world.press(x, y, button) -- handles mouse presses when in world phase
    -- updateWorld()
 --  setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
-    if buildingCount == 0 and player.authcode then
-        http.request("http://freshplay.co.uk/b/api.php?a=build&position="..cID.."&type=Castle&authcode="..player.authcode)
-        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
+    if love.keyboard.isDown("lshift") then button = 2 end
+    if buildingCount == 0 and authcode then
+        http.request("http://freshplay.co.uk/b/api.php?a=build&position="..cID.."&type=Castle&authcode="..authcode)
+        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..authcode)
         buildingCount = tonumber(buildingCount)
         updateWorld()
-    elseif player.authcode and (cID + 100 == selectedTile or cID - 100 == selectedTile or cID + 1 == selectedTile or cID - 1 == selectedTile) and world[selectedTile].username == player.username then
-        b = http.request("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&number="..(world[selectedTile].units-1).."&authcode="..player.authcode)
-       -- print("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&authcode="..player.authcode)
+    elseif authcode and (cID + 100 == selectedTile or cID - 100 == selectedTile or cID + 1 == selectedTile or cID - 1 == selectedTile) and world[selectedTile].username == player.username then
+        b = http.request("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&number="..(world[selectedTile].units-1).."&authcode="..authcode)
+       -- print("http://freshplay.co.uk/b/api.php?a=move&position="..selectedTile.."&newPosition="..cID.."&authcode="..authcode)
         b = string.gsub(b, "%s+", "")
         a = atComma(b)
         if a[2] then newFight(tonumber(a[1]),tonumber(a[2]),tonumber(a[3]),tonumber(a[4])) -- start fight animation

@@ -29,7 +29,7 @@ function love.draw()
     if phase == "world" then
         world.draw()
 
-        if player.authcode then -- player is logged in
+        if authcode then -- player is logged in
             drawPlayerStats()
         end
     end

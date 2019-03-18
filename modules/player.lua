@@ -1,18 +1,13 @@
 player = {}
 
-usernameBox = addTextBox(0,30,200,tFont,"username")
-passwordBox = addTextBox(0,32+tFont:getHeight(),200,tFont,"password")
-scriptBox = addTextBox(0,54+tFont:getHeight()*4,200,tFont,"example.lua")
-
 function login(username,password)
     b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=login&username="..username.."&password="..password)
     b = string.gsub(b, "%s+", "")
     if tonumber(b) then
         player.authcode = b
         
-        b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
-        player = json:decode(b)
-
+        player = api.get("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
+    
         buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
         buildingCount = tonumber(buildingCount)
     else
@@ -26,9 +21,7 @@ function register(username,password)
     b = string.gsub(b, "%s+", "")
     if tonumber(b) then
         player.authcode = b
-        b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
-        print("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
-        player = json:decode(b)
+        player = api.get("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
 
         buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
         buildingCount = tonumber(buildingCount)
@@ -39,6 +32,12 @@ function register(username,password)
 end
 
 function drawLoginBox()
+    if not usernameBox then
+        usernameBox = addTextBox(0,30,200,tFont,"username")
+        passwordBox = addTextBox(0,32+tFont:getHeight(),200,tFont,"password")
+        scriptBox = addTextBox(0,54+tFont:getHeight()*4,200,tFont,"example.lua")
+    end
+
     if not player.authcode then
         love.graphics.setColor(0,0,0,1)
         love.graphics.rectangle("fill",0,0,200,140)
@@ -114,7 +113,7 @@ function drawBuildingBox(x, y)
                 if love.mouse.isDown(1) then
                     --print("submitted build request")
                     world[selectedTile].buildingType = "Building"
-                    http.request("http://freshplay.co.uk/b/api.php?a=build&position="..selectedTile.."&type="..v.buildingType.."&authcode="..player.authcode)
+                    api.get("http://freshplay.co.uk/b/api.php?a=build&position="..selectedTile.."&type="..v.buildingType.."&authcode="..player.authcode)
                     selectedTile = 1
                     time.updateWorld = 0
                     time.updateUser = 1

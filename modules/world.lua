@@ -190,8 +190,6 @@ function world.draw()
 end
 
 function world.update(dt)
-    cx, cy = love.mouse.getPosition()
-
     local camSpeed = 64*dt
     if love.keyboard.isDown(KEY_CAM_SPEED) then camSpeed = 256*dt end
     
@@ -213,12 +211,10 @@ function world.update(dt)
         end
 
         if time.updateUser < 0 then
-            b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
-            player = json:decode(b)
+            player = api.get("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
             time.updateUser = 30
 
-            b = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildable&authcode="..player.authcode)
-            buildable = json:decode(b)
+            buildable = api.get("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildable&authcode="..player.authcode)
         end
 
         if time.updateWorld < 0 then
@@ -259,8 +255,8 @@ end
 function world.press(x, y, button) -- handles mouse presses when in world phase
    -- updateWorld()
 --  setTT("Tile Information",world[cID].buildingType..", owned by "..world[cID].username..".")
-    if buildingCount == 0 and player.authcode then
-        http.request("http://freshplay.co.uk/b/api.php?a=build&position="..cID.."&type=Castle&authcode="..player.authcode)
+    if buildingCount == 0 and player.authcode then --TODO: THESE CANNOT BE FIXED YET AS THE API DOESN'T RETURN JSON FOR ALL RESULTS PROPERLY
+        api.get("http://freshplay.co.uk/b/api.php?a=build&position="..cID.."&type=Castle&authcode="..player.authcode)
         buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
         buildingCount = tonumber(buildingCount)
         updateWorld()

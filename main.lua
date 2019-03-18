@@ -10,8 +10,9 @@ require "libraries.ui"
 require "modules.player"
 require "modules.fight"
 require "modules.api"
+require "modules.islands"
 
-phase = "world"
+phase = "islands" -- login*, islands, world 
 
 time = {
     updateUser = 5,
@@ -19,23 +20,30 @@ time = {
 }
 
 function love.load()
-    world.load()
+    -- world.load()
     love.filesystem.setIdentity("battle-client")
-    
-  --  loadScript("example.lua")
+    font = love.graphics.newFont(12)
+    tFont = love.graphics.newFont(20)
+    loadIslands()
+
+    love.graphics.setBackgroundColor(0,0,0.5)
 end
 
 function love.draw()
-    if phase == "world" then
+    if phase == "islands" then
+        drawIslands()
+    elseif phase == "world" then
         world.draw()
 
         if player.authcode then -- player is logged in
             drawPlayerStats()
         end
+
+
+        if script.loaded == true then drawScriptControls()
+        elseif not authcode then drawLoginBox() end
     end
 
-    if script.loaded == true then drawScriptControls()
-    elseif not authcode then drawLoginBox() end
     drawUIElements()
     
 end
@@ -44,10 +52,11 @@ end
 function love.update(dt)
     if phase == "world" then
         world.update(dt)
+        updateScript(dt)
     end
 
     updateUIElements(dt)
-    updateScript(dt)
+    cx, cy = love.mouse.getPosition()
 end
 
 function love.mousepressed(x, y, button, istouch)

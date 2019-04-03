@@ -23,7 +23,7 @@ function love.load()
     -- world.load()
     love.filesystem.setIdentity("battle-client")
     font = love.graphics.newFont(12)
-    tFont = love.graphics.newFont(20)
+    tFont = love.graphics.newFont(14)
     loadIslands()
 
     love.graphics.setBackgroundColor(0,0,0.5)

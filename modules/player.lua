@@ -40,7 +40,7 @@ function drawLoginBox()
 
     if not player.authcode then
         love.graphics.setColor(0,0,0,1)
-        love.graphics.rectangle("fill",0,0,200,140)
+        love.graphics.rectangle("fill",0,0,200,180)
         love.graphics.setColor(1,1,1,1)
         love.graphics.setFont(bFont)
         love.graphics.printf("Please login", 0, 0, 200, "center")
@@ -62,10 +62,18 @@ function drawScriptControls()
     love.graphics.rectangle("fill", 0, 0, (script.time/2)*200, 12)
     love.graphics.setColor(1,1,1)
 
-    if drawButton("Play",10,32,180,bFont) then script.paused = false end
-    if drawButton("Pause",10,32+bFont:getHeight(),180,bFont) then script.paused = true end
-    if drawButton("Reload",10,32+bFont:getHeight()*2,180,bFont) then loadScript(textbox[scriptBox].text) end
-    if drawButton("Eject",10,32+bFont:getHeight()*3,180,bFont) then script.loaded = false end
+    if drawButton("Play",10,32,180,bFont) then
+        script.paused = false
+    end
+    if drawButton("Pause",10,32+bFont:getHeight(),180,bFont) then
+        script.paused = true
+    end
+    if drawButton("Reload",10,32+bFont:getHeight()*2,180,bFont) then
+        loadScript(textbox[scriptBox].text)
+    end
+    if drawButton("Eject",10,32+bFont:getHeight()*3,180,bFont) then
+        script.loaded = false
+    end
 end
 
 function drawPlayerStats()

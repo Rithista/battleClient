@@ -154,10 +154,10 @@ function love.keypressed(key)
             -- string.sub operates on bytes rather than UTF-8 characters, so we couldn't do string.sub(text, 1, -2).
             textbox[activeTextBox].text = string.sub(textbox[activeTextBox].text, 1, byteoffset - 1)
         end
-    elseif key == "p" then
+    elseif key == "p" and 1 == 2 then
         local screenshot = worldCanvas:newImageData()
         screenshot:encode('png', os.time() .. '.png');
-    elseif key == KEY_MAP and player.authcode then
+    elseif key == KEY_MAP and authcode then
         updateMap()
     elseif key == "space" then
         cam.x = round(cam.x)

@@ -26,6 +26,7 @@ script = {
 }
 
 function loadScript(url)
+    if url == "" then url = "example.lua" end
     local s = love.filesystem.read( url )
     s = [[
         local http = require("socket.http")

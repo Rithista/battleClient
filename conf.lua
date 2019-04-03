@@ -9,10 +9,14 @@ function love.conf(t)
  
     t.audio.mixwithsystem = true        -- Keep background music playing when opening LOVE (boolean, iOS and Android only)
  
+<<<<<<< HEAD
     t.window.title = "Islands of Battle"         -- The window title (string)
+=======
+    t.window.title = "Islands of Battle Alpha"         -- The window title (string)
+>>>>>>> da2729b0a4cef0a508852f470449399b3a9c125a
     t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
-    t.window.width = 1200             -- The window width (number)
-    t.window.height = 900               -- The window height (number)
+    t.window.width = 1280             -- The window width (number)
+    t.window.height = 720               -- The window height (number)
     t.window.borderless = false         -- Remove all border visuals from the window (boolean)
     t.window.resizable = true          -- Let the window be user-resizable (boolean)
     t.window.minwidth = 1               -- Minimum window width if the window is resizable (number)

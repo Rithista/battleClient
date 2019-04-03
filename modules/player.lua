@@ -1,8 +1,11 @@
 player = {}
 
 function login(username,password)
+
     b, c, h = http.request("http://freshplay.co.uk/b/api.php?a=login&username="..username.."&password="..password)
+
     b = string.gsub(b, "%s+", "")
+ 
     if tonumber(b) then
         player.authcode = b
         
@@ -14,6 +17,7 @@ function login(username,password)
         love.window.showMessageBox("Unable to login","Username or password is incorrect.")
         player = {}
     end
+
 end
 
 function register(username,password)
@@ -23,7 +27,7 @@ function register(username,password)
         player.authcode = b
         player = api.get("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=data&authcode="..player.authcode)
 
-        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..player.authcode)
+        buildingCount = http.request("http://freshplay.co.uk/b/api.php?a=get&scope=player&type=buildingSum&authcode="..authcode)
         buildingCount = tonumber(buildingCount)
     else
         love.window.showMessageBox("Unable to register","An account with this username already exists!")
@@ -121,7 +125,11 @@ function drawBuildingBox(x, y)
                 if love.mouse.isDown(1) then
                     --print("submitted build request")
                     world[selectedTile].buildingType = "Building"
+<<<<<<< HEAD
                     api.get("http://freshplay.co.uk/b/api.php?a=build&position="..selectedTile.."&type="..v.buildingType.."&authcode="..player.authcode)
+=======
+                    http.request("http://freshplay.co.uk/b/api.php?a=build&position="..selectedTile.."&type="..v.buildingType.."&authcode="..authcode)
+>>>>>>> da2729b0a4cef0a508852f470449399b3a9c125a
                     selectedTile = 1
                     time.updateWorld = 0
                     time.updateUser = 1
